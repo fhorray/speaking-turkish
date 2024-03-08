@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useEffect, useRef, useState } from 'react';
 
 function formNumber(number: number): {
@@ -76,7 +74,6 @@ const NumbersPractice = () => {
   const [random, setRandom] = useState<number>(0);
   const [answer, setAnswer] = useState<number>(0);
   const numberInput = useRef<HTMLInputElement>(null);
-  console.log(random, answer);
 
   useEffect(() => {
     generateRandomNumber();
@@ -88,13 +85,10 @@ const NumbersPractice = () => {
   };
 
   const handleVerifyNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-
     const inputValue = Number(e.target.value);
-
     setAnswer(inputValue);
 
-    if (answer === random) {
+    if (inputValue === random) {
       generateRandomNumber();
       if (numberInput.current) {
         numberInput.current.value = '';
@@ -116,7 +110,9 @@ const NumbersPractice = () => {
           ref={numberInput}
           onChange={(e) => setAnswer(Number(e.target.value))}
         />
-        <button onClick={(e) => handleVerifyNumber(e)}>Verificar</button>
+        <button type="button" onClick={() => handleVerifyNumber}>
+          Verificar
+        </button>
       </form>
     </div>
   );
