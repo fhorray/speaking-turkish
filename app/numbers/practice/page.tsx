@@ -3,8 +3,6 @@
 import { useGemini } from "@/contexts/GeminiContext";
 
 import React, { useEffect, useRef, useState } from "react";
-// AUDIOS
-import useSound from "use-sound";
 
 // ZOD IMPORTS
 import { z } from "zod";
@@ -47,9 +45,6 @@ const NumbersPractice = () => {
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [showDialog, setShowDialog] = useState<boolean>(false);
 
-  // useAudio
-  const [playCorrect] = useSound("/sounds/correct.mp3");
-
   // TOASTER
   const { toast } = useToast();
 
@@ -83,11 +78,6 @@ const NumbersPractice = () => {
       setFormSubmitted(!formSubmitted);
       setShowDialog(true);
       setAnswer(0);
-
-      // Play Correct Sound
-      // const audio = new Audio(correctAnswer);
-      // audio.play();
-      playCorrect();
     } else {
       setAnswer(0);
     }
@@ -188,7 +178,9 @@ const NumbersPractice = () => {
           </button>
         ))}
         <button
-          onClick={handleDeleteNumber}
+          onClick={() => {
+            handleDeleteNumber();
+          }}
           className="bg-gray-200 p-2 rounded-md text-black font-bold"
         >
           &#9003; {/* DELETE */}
