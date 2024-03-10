@@ -6,7 +6,7 @@ import React, { useState, useEffect } from "react";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
-import { Button } from "./ui/button";
+
 // ICONS
 import {
   ArrowPathIcon,
@@ -15,38 +15,30 @@ import {
   XMarkIcon,
 } from "@heroicons/react/16/solid";
 
-// APPLICATION START
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+import { useGemini } from "@/contexts/GeminiContext";
+import { Button } from "@/components/ui/button";
 
-const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API);
-
-const SpeechComp = () => {
+const PronouncePracticePage = () => {
   const { transcript, resetTranscript } = useSpeechRecognition();
   const [transcription, setTranscription] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [phrase, setPhrase] = useState("");
-  console.log(transcription);
+  const { generateContent } = useGemini();
 
   const generatePhrase = async () => {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.0-pro-001" });
-    const prompt =
-      "Escreva uma frase em turco contendo a regra gramatical: -dığı, sem mmostrar a tradução";
-
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    setPhrase(text);
+    const prompt = generateContent(
+      "Escreva uma frase em turco contendo a regra gramatical: -dığı, sem mmostrar a tradução"
+    ).then((content) => {
+      setPhrase(content);
+    });
   };
 
   const correctPhrase = async () => {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.0-pro-001" });
-    const prompt = `Verifique se a frase: ${transcript} se parece com: ${phrase}, se sim escreva a frase: ${transcript}, não precisa ser igual, se as frases coincidirem apenas um pouco. Talvez o usuario fale as vezes uma palavra ou outra que não era pra ser gravada, releve essas palavras na hora de fazer a verificação.. Se a frase se assemelhar retorne apenas a frase: CERTO: ${phrase}, se não se assemelhrem retorne apenas: Tente novamente!`;
-
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    console.log("PROMP: ", text);
-    setTranscription(text);
+    const prompt = generateContent(
+      `Verifique se a frase: ${transcript} se parece com: ${phrase}, se sim escreva a frase: ${transcript}, não precisa ser igual, se as frases coincidirem apenas um pouco. Talvez o usuario fale as vezes uma palavra ou outra que não era pra ser gravada, releve essas palavras na hora de fazer a verificação.. Se a frase se assemelhar retorne apenas a frase: CERTO: ${phrase}, se não se assemelhrem retorne apenas: Tente novamente!`
+    ).then((content) => {
+      setTranscription(content);
+    });
   };
 
   useEffect(() => {
@@ -123,4 +115,4 @@ const SpeechComp = () => {
   );
 };
 
-export default SpeechComp;
+export default PronouncePracticePage;
