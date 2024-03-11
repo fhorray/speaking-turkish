@@ -27,17 +27,21 @@ const PronouncePracticePage = () => {
   const { generateContent } = useGemini();
 
   const generatePhrase = async () => {
-    const prompt = generateContent(
-      'Escreva uma frase em turco contendo a regra gramatical: -dığı, sem mmostrar a tradução',
-    ).then((content) => {
+    const prompt = generateContent([
+      {
+        text: 'Escreva uma frase em turco contendo a regra gramatical: -dığı, sem mostrar a tradução',
+      },
+    ]).then((content) => {
       setPhrase(content);
     });
   };
 
   const correctPhrase = async () => {
-    const prompt = generateContent(
-      `Verifique se a frase: ${transcript} se parece com: ${phrase}, se sim escreva a frase: ${transcript}, não precisa ser igual, se as frases coincidirem apenas um pouco. Talvez o usuario fale as vezes uma palavra ou outra que não era pra ser gravada, releve essas palavras na hora de fazer a verificação.. Se a frase se assemelhar retorne apenas a frase: CERTO: ${phrase}, se não se assemelhrem retorne apenas: Tente novamente!`,
-    ).then((content) => {
+    const prompt = generateContent([
+      {
+        text: `Verifique se a frase: ${transcript} se parece com: ${phrase}, se sim escreva a frase: ${transcript}, não precisa ser igual, se as frases coincidirem apenas um pouco. Talvez o usuario fale as vezes uma palavra ou outra que não era pra ser gravada, releve essas palavras na hora de fazer a verificação.. Se a frase se assemelhar retorne apenas a frase: CERTO: ${phrase}, se não se assemelhrem retorne apenas: Tente novamente!`,
+      },
+    ]).then((content) => {
       setTranscription(content);
     });
   };
