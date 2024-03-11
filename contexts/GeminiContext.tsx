@@ -22,6 +22,12 @@ export function useGemini(): GeminiContextType {
 }
 
 export function GeminiProvider({ children }: { children: ReactNode }) {
+  if (!process.env.NEXT_PUBLIC_GEMINI_API) {
+    throw new Error(
+      'NEXT_PUBLIC_GEMINI_API environment variable is not defined',
+    );
+  }
+
   const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API);
 
   const generateContent = async (prompt: string): Promise<string> => {
