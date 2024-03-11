@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useGemini } from "@/contexts/GeminiContext";
+import { useGemini } from '@/contexts/GeminiContext';
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react';
 
 // ZOD IMPORTS
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -17,15 +17,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
-import { ToastAction } from "@radix-ui/react-toast";
-import { useScore } from "@/contexts/ScoreContext";
-import { FireIcon } from "@heroicons/react/16/solid";
-import ScoreFlame from "@/components/ScoreFlame";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/use-toast';
+import { ToastAction } from '@radix-ui/react-toast';
+import { useScore } from '@/contexts/ScoreContext';
+import { FireIcon } from '@heroicons/react/16/solid';
+import ScoreFlame from '@/components/ScoreFlame';
+import { useRouter } from 'next/navigation';
 
-const prompt = `Create a random number in Turkish, show only the number in text format. and return a text like this: "[numeral: numeric number, verbal: verbal number], format the text to be a valid number, example: if the number generated as: [numeral: 023, verbal: "sıfır iki üç"], you can convert it to  [numeral: 23, verbal: "yirm üç"] and not [numeral: 023, verbal: "sıfır iki üç"] because 023 its not sıfır iki üç instead it is yirmi üç`;
+const prompt = `Generate a turkish number list with 10 random numbers with a fixed pattern like this:[ { "verbal": "altı yüz yirmi iki", "numeral": 622 }, { "verbal": "dokuz yüz doksan dokuz", "numeral": 999 } ]. Use the JSON format given below.`;
 
 interface NumberObject {
   numeral: number;
@@ -39,14 +40,18 @@ const formSchema = z.object({
 
 // APP INITIALIZE
 const NumbersPractice = () => {
-  const [random, setRandom] = useState<NumberObject>({
-    numeral: 0,
-    verbal: "",
-  });
+  const [random, setRandom] = useState<NumberObject[]>([
+    {
+      numeral: 0,
+      verbal: '',
+    },
+  ]);
   const [answer, setAnswer] = useState<number>(0);
   const numberInput = useRef<HTMLInputElement>(null);
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [showDialog, setShowDialog] = useState<boolean>(false);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const router = useRouter();
 
   // SCORE
   const { score, setScore } = useScore();
@@ -56,46 +61,49 @@ const NumbersPractice = () => {
 
   // useEffect to create a random Number with Gemini
   const { generateContent } = useGemini();
+
+  // GET NUMBER LIST
   useEffect(() => {
     generateContent(prompt).then((number) => {
-      // REGEX
-      const regex = /\[numeral: (\d+), verbal: "(.*?)"]/;
-
-      // Valores usando REGEX
-      const match = number.match(regex);
-
-      // Array de objetos
-      const obj: NumberObject = match
-        ? { numeral: Number(match[1]), verbal: match[2] }
-        : { numeral: 0, verbal: "" };
-
-      if (!obj) {
-        window.location.reload();
+      try {
+        const cleanedJson = JSON.parse(
+          number?.replace('```json', '').replace('```', ''),
+        );
+        console.log(cleanedJson);
+        setRandom(cleanedJson);
+      } catch (error) {
+        console.error('Erro ao fazer o parse do JSON:', error);
       }
-
-      console.log(obj);
-
-      setRandom(obj);
     });
-  }, [formSubmitted]);
+  }, []);
+
+  // REDIRECT TO SCORE PAGE AFTER FINISH LESSON
+  useEffect(() => {
+    if (currentIndex > 9) {
+      router.push('/score');
+    }
+  }, [currentIndex]);
+
+  console.log(random);
 
   const handleVerifyNumber = () => {
-    if (random.numeral === answer) {
+    if (random[currentIndex]?.numeral === answer) {
       if (numberInput.current) {
-        numberInput.current.value = "";
+        numberInput.current.value = '';
         numberInput.current.focus();
       }
       setFormSubmitted(!formSubmitted);
       setShowDialog(true);
       setAnswer(0);
       setScore(score + 1);
+      setCurrentIndex(currentIndex + 1); // Avança para o próximo número quando a resposta está correta
     } else {
       setAnswer(0);
     }
   };
 
   const handleNumberClick = (num: number) => {
-    if (answer === random.numeral) {
+    if (answer === random[currentIndex]?.numeral) {
       return;
     }
     setAnswer(answer * 10 + num);
@@ -111,7 +119,7 @@ const NumbersPractice = () => {
   // Captalize Verbal Number Function
   function capitalizeWords(phrase: string) {
     // Divida a Phrase em words individuais
-    let words = phrase.split(" ");
+    let words = phrase.split(' ');
 
     // Capitalize a primeira letra de cada palavra
     for (let i = 0; i < words.length; i++) {
@@ -120,7 +128,7 @@ const NumbersPractice = () => {
     }
 
     // Junte as words novamente para formar a nova Phrase
-    let newPhrase = words.join(" ");
+    let newPhrase = words.join(' ');
     return newPhrase;
   }
 
@@ -139,11 +147,13 @@ const NumbersPractice = () => {
 
   return (
     <div className="m-auto flex flex-col gap-5 items-center justify-center h-screen w-full max-w-xs">
-      <ScoreFlame />
-      <span className="text-xl font-medium">
-        {capitalizeWords(random.verbal)}
-      </span>
-
+      <div>
+        <div>
+          {currentIndex < random.length
+            ? capitalizeWords(random[currentIndex]?.verbal)
+            : ''}
+        </div>
+      </div>
       <Form {...form}>
         <form
           className="w-full text-center"
@@ -160,14 +170,14 @@ const NumbersPractice = () => {
                     className="max-w-xs"
                     ref={numberInput}
                     placeholder="2453..."
-                    disabled={answer === random.numeral}
+                    disabled={answer === random[currentIndex]?.numeral}
                     type="number"
                     onChange={(e) => {
                       const value = parseFloat(e.target.value);
                       field.onChange(isNaN(value) ? 0 : value);
                       setAnswer(isNaN(value) ? 0 : value);
                     }}
-                    value={answer === 0 ? "" : answer}
+                    value={answer === 0 ? '' : answer}
                   />
                 </FormControl>
                 <FormDescription>Escreva sua resposta acima</FormDescription>
@@ -184,7 +194,7 @@ const NumbersPractice = () => {
             key={num}
             onClick={() => handleNumberClick(num)}
             className="bg-gray-200 p-2 rounded-md text-black font-bold"
-            disabled={answer === random.numeral}
+            disabled={answer === random[currentIndex]?.numeral}
           >
             {num}
           </button>
@@ -201,18 +211,18 @@ const NumbersPractice = () => {
           onClick={() => {
             handleVerifyNumber();
 
-            answer === random.numeral
+            answer === random[currentIndex]?.numeral
               ? toast({
-                  title: "Certo",
-                  description: "Voce acertooou",
+                  title: 'Certo',
+                  description: 'Voce acertooou',
                   action: (
                     <ToastAction altText="Try again">Continuar</ToastAction>
                   ),
                 })
               : toast({
-                  variant: "destructive",
-                  title: "Oops!",
-                  description: "Acho que você errou algum número...",
+                  variant: 'destructive',
+                  title: 'Oops!',
+                  description: 'Acho que você errou algum número...',
                   action: (
                     <ToastAction
                       altText="Try again"

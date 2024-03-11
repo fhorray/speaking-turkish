@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { createContext, useContext, ReactNode } from "react";
+import { createContext, useContext, ReactNode } from 'react';
 import {
   GoogleGenerativeAI,
   GenerativeModel,
   GenerateContentResult,
-} from "@google/generative-ai";
+} from '@google/generative-ai';
 
 interface GeminiContextType {
   generateContent: (prompt: string) => Promise<string>; // Updated return type to Promise<string>
@@ -16,7 +16,7 @@ const GeminiContext = createContext<GeminiContextType | undefined>(undefined);
 export function useGemini(): GeminiContextType {
   const context = useContext(GeminiContext);
   if (!context) {
-    throw new Error("useGemini must be used within a GeminiProvider");
+    throw new Error('useGemini must be used within a GeminiProvider');
   }
   return context;
 }
@@ -26,7 +26,7 @@ export function GeminiProvider({ children }: { children: ReactNode }) {
 
   const generateContent = async (prompt: string): Promise<string> => {
     const model: GenerativeModel = genAI.getGenerativeModel({
-      model: "gemini-1.0-pro-001",
+      model: 'gemini-1.0-pro-001',
     });
     const result: GenerateContentResult = await model.generateContent(prompt);
     const response = await result.response;

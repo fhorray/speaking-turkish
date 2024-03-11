@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   createContext,
@@ -6,7 +6,7 @@ import {
   ReactNode,
   useState,
   useEffect,
-} from "react";
+} from 'react';
 
 interface ScoreContextType {
   score: number;
@@ -15,22 +15,22 @@ interface ScoreContextType {
 
 const ScoreContext = createContext<ScoreContextType | undefined>(undefined);
 
-export function useScore(): ScoreContextType {
+function useScore(): ScoreContextType {
   const context = useContext(ScoreContext);
   if (!context) {
-    throw new Error("useScore must be used within a ScoreProvider");
+    throw new Error('useScore must be used within a ScoreProvider');
   }
   return context;
 }
 
-export function ScoreProvider({ children }: { children: ReactNode }) {
+function ScoreProvider({ children }: { children: ReactNode }) {
   const [score, setScore] = useState<number>(() => {
-    const storedScore = localStorage.getItem("score");
+    const storedScore = localStorage.getItem('score');
     return storedScore ? parseInt(storedScore, 10) : 0;
   });
 
   useEffect(() => {
-    localStorage.setItem("score", score.toString());
+    localStorage.setItem('score', score.toString());
   }, [score]);
 
   const value: ScoreContextType = {
@@ -42,3 +42,5 @@ export function ScoreProvider({ children }: { children: ReactNode }) {
     <ScoreContext.Provider value={value}>{children}</ScoreContext.Provider>
   );
 }
+
+export { useScore, ScoreProvider };
