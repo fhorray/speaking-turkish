@@ -6,11 +6,13 @@ import {
   ReactNode,
   useState,
   useEffect,
+  Dispatch,
+  SetStateAction,
 } from 'react';
 
 interface ScoreContextType {
   score: number;
-  setScore: React.Dispatch<React.SetStateAction<number>>;
+  setScore: Dispatch<SetStateAction<number>>;
 }
 
 const ScoreContext = createContext<ScoreContextType | undefined>(undefined);
@@ -24,14 +26,19 @@ function useScore(): ScoreContextType {
 }
 
 function ScoreProvider({ children }: { children: ReactNode }) {
-  const [score, setScore] = useState<number>(() => {
-    const storedScore = localStorage.getItem('score');
-    return storedScore ? parseInt(storedScore, 10) : 0;
-  });
+  const [score, setScoreState] = useState<number>(0);
 
   useEffect(() => {
-    localStorage.setItem('score', score.toString());
-  }, [score]);
+    const storedScore = localStorage.getItem('score');
+    if (storedScore) {
+      setScoreState(parseInt(storedScore, 10));
+    }
+  }, []);
+
+  const setScore: ScoreContextType['setScore'] = (newScore) => {
+    setScoreState(newScore);
+    localStorage.setItem('score', newScore.toString());
+  };
 
   const value: ScoreContextType = {
     score,
