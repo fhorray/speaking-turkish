@@ -3,12 +3,12 @@
 import { createContext, useContext, ReactNode } from 'react';
 import {
   GoogleGenerativeAI,
-  GenerativeModel,
-  GenerateContentResult,
+  HarmCategory,
+  HarmBlockThreshold,
 } from '@google/generative-ai';
 
 interface GeminiContextType {
-  generateContent: (prompt: string) => Promise<string>; // Updated return type to Promise<string>
+  generateContent: (prompt: Array<{ text: string }>) => Promise<string>;
 }
 
 const GeminiContext = createContext<GeminiContextType | undefined>(undefined);
@@ -22,22 +22,50 @@ export function useGemini(): GeminiContextType {
 }
 
 export function GeminiProvider({ children }: { children: ReactNode }) {
-  if (!process.env.NEXT_PUBLIC_GEMINI_API) {
-    throw new Error(
-      'NEXT_PUBLIC_GEMINI_API environment variable is not defined',
-    );
-  }
+  const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API; // Replace with your API key
+  const MODEL_NAME = 'gemini-1.0-pro';
 
-  const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API);
+  const genAI = new GoogleGenerativeAI(API_KEY);
 
-  const generateContent = async (prompt: string): Promise<string> => {
-    const model: GenerativeModel = genAI.getGenerativeModel({
-      model: 'gemini-1.0-pro-001',
+  const generateContent = async (
+    prompt: Array<{ text: string }>,
+  ): Promise<string> => {
+    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+
+    const generationConfig = {
+      temperature: 0.9,
+      topK: 1,
+      topP: 1,
+      maxOutputTokens: 2048,
+    };
+
+    const safetySettings = [
+      {
+        category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+        threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+      },
+      {
+        category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+        threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+      },
+      {
+        category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+        threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+      },
+      {
+        category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+        threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+      },
+    ];
+
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: prompt }],
+      generationConfig,
+      safetySettings,
     });
-    const result: GenerateContentResult = await model.generateContent(prompt);
-    const response = await result.response;
-    const generatedText = await response.text();
-    return generatedText; // Removed unnecessary .then() block
+
+    const response = result.response;
+    return response.text();
   };
 
   const value: GeminiContextType = {

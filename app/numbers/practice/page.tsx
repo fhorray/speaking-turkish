@@ -8,7 +8,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
+
 import {
   Form,
   FormControl,
@@ -27,7 +27,24 @@ import ScoreFlame from '@/components/ScoreFlame';
 import { useRouter } from 'next/navigation';
 import { Progress } from '@/components/ui/progress';
 
-const prompt = `Generate a turkish number list with 10 random numbers with a fixed pattern like this:[ { "verbal": "altı yüz yirmi iki", "numeral": 622 }, { "verbal": "dokuz yüz doksan dokuz", "numeral": 999 } ]. Use the JSON format given below.`;
+const prompt = [
+  { text: 'input: a list of turkish random numbers in JSON format' },
+  {
+    text: 'output: [\n { "verbal": "altmış dokuz", "numeral": 69 },\n  { "verbal": "yetmiş yedi", "numeral": 77 },\n  { "verbal": "seksen üç", "numeral": 83 },\n  { "verbal": "doksan beş", "numeral": 95 }\n]',
+  },
+  { text: 'input: generate a list of random numbers in turkish' },
+  {
+    text: 'output: [\n  { "verbal": "otuz dört", "numeral": 34 },\n  { "verbal": "elli altı", "numeral": 56 },\n  { "verbal": "yetmiş sekiz", "numeral": 78 },\n  { "verbal": "doksan dokuz", "numeral": 99 }\n]',
+  },
+  { text: 'input: create a list of random numbers in english' },
+  {
+    text: 'output: [\n{ "verbal": "yirmi bir", "numeral": 21 },\n  { "verbal": "kırk üç", "numeral": 43 },\n  { "verbal": "altmış yedi", "numeral": 67 },\n  { "verbal": "seksen dört", "numeral": 84 }\n]',
+  },
+  { text: 'input: generate a random number in english in JSON format' },
+  { text: 'output: [ { "verbal": "altmış yedi", "numeral": 67 }]' },
+  { text: 'input: give me an JSON object with 10 random numbers in turkish' },
+  { text: 'output: ' },
+];
 
 interface NumberObject {
   numeral: number;
@@ -50,7 +67,6 @@ const NumbersPractice = () => {
   const [answer, setAnswer] = useState<number>(0);
   const numberInput = useRef<HTMLInputElement>(null);
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
-  const [showDialog, setShowDialog] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [progess, setProgess] = useState<number>(0);
   const router = useRouter();
@@ -66,15 +82,16 @@ const NumbersPractice = () => {
 
   // GET NUMBER LIST
   useEffect(() => {
-    generateContent(prompt).then((number) => {
+    generateContent(prompt).then((numbers) => {
+      console.log(numbers);
       try {
         const cleanedJson = JSON.parse(
-          number?.replace('```json', '').replace('```', ''),
+          numbers.replace('```json', '').replace('```', ''),
         );
-        console.log(cleanedJson);
         setRandom(cleanedJson);
+        console.log(cleanedJson);
       } catch (error) {
-        console.error('Erro ao fazer o parse do JSON:', error);
+        console.log('Erro: ', error);
       }
     });
   }, [generateContent]);
@@ -93,7 +110,6 @@ const NumbersPractice = () => {
         numberInput.current.focus();
       }
       setFormSubmitted(!formSubmitted);
-      setShowDialog(true);
       setAnswer(0);
       setScore(score + 1);
       setCurrentIndex(currentIndex + 1); // Avança para o próximo número quando a resposta está correta
@@ -174,6 +190,7 @@ const NumbersPractice = () => {
                     placeholder="2453..."
                     disabled={answer === random[currentIndex]?.numeral}
                     type="number"
+                    readOnly={true}
                     onChange={(e) => {
                       const value = parseFloat(e.target.value);
                       field.onChange(isNaN(value) ? 0 : value);
