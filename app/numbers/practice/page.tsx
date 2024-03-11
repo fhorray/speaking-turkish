@@ -75,7 +75,7 @@ const NumbersPractice = () => {
         console.error('Erro ao fazer o parse do JSON:', error);
       }
     });
-  }, []);
+  }, [generateContent]);
 
   // REDIRECT TO SCORE PAGE AFTER FINISH LESSON
   useEffect(() => {
@@ -83,8 +83,6 @@ const NumbersPractice = () => {
       router.push('/score');
     }
   }, [currentIndex]);
-
-  console.log(random);
 
   const handleVerifyNumber = () => {
     if (random[currentIndex]?.numeral === answer) {
