@@ -21,6 +21,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
+import { useScore } from "@/contexts/ScoreContext";
+import { FireIcon } from "@heroicons/react/16/solid";
+import ScoreFlame from "@/components/ScoreFlame";
 
 const prompt = `Create a random number in Turkish, show only the number in text format. and return a text like this: "[numeral: numeric number, verbal: verbal number], format the text to be a valid number, example: if the number generated as: [numeral: 023, verbal: "sıfır iki üç"], you can convert it to  [numeral: 23, verbal: "yirm üç"] and not [numeral: 023, verbal: "sıfır iki üç"] because 023 its not sıfır iki üç instead it is yirmi üç`;
 
@@ -45,6 +48,9 @@ const NumbersPractice = () => {
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [showDialog, setShowDialog] = useState<boolean>(false);
 
+  // SCORE
+  const { score, setScore } = useScore();
+
   // TOASTER
   const { toast } = useToast();
 
@@ -63,6 +69,10 @@ const NumbersPractice = () => {
         ? { numeral: Number(match[1]), verbal: match[2] }
         : { numeral: 0, verbal: "" };
 
+      if (!obj) {
+        window.location.reload();
+      }
+
       console.log(obj);
 
       setRandom(obj);
@@ -78,6 +88,7 @@ const NumbersPractice = () => {
       setFormSubmitted(!formSubmitted);
       setShowDialog(true);
       setAnswer(0);
+      setScore(score + 1);
     } else {
       setAnswer(0);
     }
@@ -128,6 +139,7 @@ const NumbersPractice = () => {
 
   return (
     <div className="m-auto flex flex-col gap-5 items-center justify-center h-screen w-full max-w-xs">
+      <ScoreFlame />
       <span className="text-xl font-medium">
         {capitalizeWords(random.verbal)}
       </span>

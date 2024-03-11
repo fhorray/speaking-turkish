@@ -3,6 +3,10 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { GeminiProvider } from "@/contexts/GeminiContext";
 import { Toaster } from "@/components/ui/toaster";
+import { ScoreProvider } from "@/contexts/ScoreContext";
+import { FireIcon } from "@heroicons/react/16/solid";
+import ScoreFlame from "@/components/ScoreFlame";
+import Header from "@/components/Header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +23,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <GeminiProvider>{children}</GeminiProvider>
+        <GeminiProvider>
+          <ScoreProvider>
+            <Header />
+
+            {children}
+          </ScoreProvider>
+        </GeminiProvider>
         <Toaster />
       </body>
     </html>
