@@ -25,18 +25,12 @@ function useScore(): ScoreContextType {
 
 function ScoreProvider({ children }: { children: ReactNode }) {
   const [score, setScore] = useState<number>(() => {
-    if (typeof window !== 'undefined') {
-      const storedScore = localStorage.getItem('score');
-      return storedScore ? parseInt(storedScore, 10) : 0;
-    } else {
-      return 0;
-    }
+    const storedScore = localStorage.getItem('score');
+    return storedScore ? parseInt(storedScore, 10) : 0;
   });
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('score', score.toString());
-    }
+    localStorage.setItem('score', score.toString());
   }, [score]);
 
   const value: ScoreContextType = {

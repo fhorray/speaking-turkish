@@ -25,6 +25,7 @@ import { useScore } from '@/contexts/ScoreContext';
 import { FireIcon } from '@heroicons/react/16/solid';
 import ScoreFlame from '@/components/ScoreFlame';
 import { useRouter } from 'next/navigation';
+import { Progress } from '@/components/ui/progress';
 
 const prompt = `Generate a turkish number list with 10 random numbers with a fixed pattern like this:[ { "verbal": "altı yüz yirmi iki", "numeral": 622 }, { "verbal": "dokuz yüz doksan dokuz", "numeral": 999 } ]. Use the JSON format given below.`;
 
@@ -51,6 +52,7 @@ const NumbersPractice = () => {
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [progess, setProgess] = useState<number>(0);
   const router = useRouter();
 
   // SCORE
@@ -80,7 +82,7 @@ const NumbersPractice = () => {
   // REDIRECT TO SCORE PAGE AFTER FINISH LESSON
   useEffect(() => {
     if (currentIndex > 9) {
-      router.push('/score');
+      router.push(`/score/${currentIndex}`);
     }
   }, [currentIndex]);
 
@@ -95,6 +97,7 @@ const NumbersPractice = () => {
       setAnswer(0);
       setScore(score + 1);
       setCurrentIndex(currentIndex + 1); // Avança para o próximo número quando a resposta está correta
+      setProgess(progess + 10);
     } else {
       setAnswer(0);
     }
@@ -145,6 +148,7 @@ const NumbersPractice = () => {
 
   return (
     <div className="m-auto flex flex-col gap-5 items-center justify-center h-screen w-full max-w-xs">
+      <Progress value={progess} />
       <div>
         <div>
           {currentIndex < random.length

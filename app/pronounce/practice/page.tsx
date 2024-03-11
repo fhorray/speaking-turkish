@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
 // IMPORTS
-import "regenerator-runtime/runtime";
-import React, { useState, useEffect } from "react";
+import 'regenerator-runtime/runtime';
+import React, { useState, useEffect } from 'react';
 import SpeechRecognition, {
   useSpeechRecognition,
-} from "react-speech-recognition";
+} from 'react-speech-recognition';
 
 // ICONS
 import {
@@ -13,21 +13,22 @@ import {
   PlayIcon,
   StopIcon,
   XMarkIcon,
-} from "@heroicons/react/16/solid";
+} from '@heroicons/react/16/solid';
 
-import { useGemini } from "@/contexts/GeminiContext";
-import { Button } from "@/components/ui/button";
+import { useGemini } from '@/contexts/GeminiContext';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 
 const PronouncePracticePage = () => {
   const { transcript, resetTranscript } = useSpeechRecognition();
-  const [transcription, setTranscription] = useState("");
+  const [transcription, setTranscription] = useState('');
   const [isListening, setIsListening] = useState(false);
-  const [phrase, setPhrase] = useState("");
+  const [phrase, setPhrase] = useState('');
   const { generateContent } = useGemini();
 
   const generatePhrase = async () => {
     const prompt = generateContent(
-      "Escreva uma frase em turco contendo a regra gramatical: -dığı, sem mmostrar a tradução"
+      'Escreva uma frase em turco contendo a regra gramatical: -dığı, sem mmostrar a tradução',
     ).then((content) => {
       setPhrase(content);
     });
@@ -35,16 +36,16 @@ const PronouncePracticePage = () => {
 
   const correctPhrase = async () => {
     const prompt = generateContent(
-      `Verifique se a frase: ${transcript} se parece com: ${phrase}, se sim escreva a frase: ${transcript}, não precisa ser igual, se as frases coincidirem apenas um pouco. Talvez o usuario fale as vezes uma palavra ou outra que não era pra ser gravada, releve essas palavras na hora de fazer a verificação.. Se a frase se assemelhar retorne apenas a frase: CERTO: ${phrase}, se não se assemelhrem retorne apenas: Tente novamente!`
+      `Verifique se a frase: ${transcript} se parece com: ${phrase}, se sim escreva a frase: ${transcript}, não precisa ser igual, se as frases coincidirem apenas um pouco. Talvez o usuario fale as vezes uma palavra ou outra que não era pra ser gravada, releve essas palavras na hora de fazer a verificação.. Se a frase se assemelhar retorne apenas a frase: CERTO: ${phrase}, se não se assemelhrem retorne apenas: Tente novamente!`,
     ).then((content) => {
       setTranscription(content);
     });
   };
 
   useEffect(() => {
-    setTranscription("");
+    setTranscription('');
     if (isListening) {
-      SpeechRecognition.startListening({ continuous: true, language: "tr-TR" });
+      SpeechRecognition.startListening({ continuous: true, language: 'tr-TR' });
     } else {
       SpeechRecognition.stopListening();
     }
@@ -56,6 +57,7 @@ const PronouncePracticePage = () => {
 
   return (
     <section className="flex flex-col gap-14 items-center justify-center h-screen w-full">
+      <Progress value={33} />
       <div className="flex flex-col gap-5 items-center text-md font-nomral">
         <p>{phrase}</p>
         <Button
@@ -83,7 +85,7 @@ const PronouncePracticePage = () => {
               onClick={() => {
                 setIsListening(true);
                 resetTranscript();
-                setTranscription("");
+                setTranscription('');
               }}
             >
               <PlayIcon className="h-4 w-4" /> Record
@@ -104,7 +106,7 @@ const PronouncePracticePage = () => {
             className="text-white flex gap-2"
             onClick={() => {
               resetTranscript();
-              setTranscription("");
+              setTranscription('');
             }}
           >
             <XMarkIcon className="h-4 w-4 font-black" /> Clear
