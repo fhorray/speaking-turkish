@@ -25,7 +25,7 @@ export function GeminiProvider({ children }: { children: ReactNode }) {
   const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API; // Replace with your API key
   const MODEL_NAME = 'gemini-1.0-pro';
 
-  const genAI = new GoogleGenerativeAI(API_KEY);
+  const genAI = new GoogleGenerativeAI(API_KEY!);
 
   const generateContent = async (
     prompt: Array<{ text: string }>,

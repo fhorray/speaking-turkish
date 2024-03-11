@@ -68,7 +68,8 @@ const NumbersPractice = () => {
   const numberInput = useRef<HTMLInputElement>(null);
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [progess, setProgess] = useState<number>(0);
+  const [progress, setProgress] = useState<number>(0);
+  const [timer, setTimer] = useState<number>(0);
   const router = useRouter();
 
   // SCORE
@@ -79,8 +80,6 @@ const NumbersPractice = () => {
 
   // useEffect to create a random Number with Gemini
   const { generateContent } = useGemini();
-
-  // GET NUMBER LIST
   useEffect(() => {
     generateContent(prompt).then((numbers) => {
       console.log(numbers);
@@ -99,9 +98,28 @@ const NumbersPractice = () => {
   // REDIRECT TO SCORE PAGE AFTER FINISH LESSON
   useEffect(() => {
     if (currentIndex > 9) {
-      router.push(`/score/${currentIndex}`);
+      router.push(`/score/${currentIndex}/${timer}`);
     }
   }, [currentIndex]);
+
+  // TIMER
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTimer((prevSeconds) => prevSeconds + 1);
+    }, 1000);
+
+    // Limpe o intervalo quando o componente for desmontado
+    return () => clearInterval(intervalId);
+  }, [timer]);
+  // Format Seconds in Hour
+  const formatTime = (timeInSeconds: number) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+
+    return `${minutes.toString().padStart(2, '0')}:${timer
+      .toString()
+      .padStart(2, '0')}`;
+  };
 
   const handleVerifyNumber = () => {
     if (random[currentIndex]?.numeral === answer) {
@@ -113,7 +131,7 @@ const NumbersPractice = () => {
       setAnswer(0);
       setScore(score + 1);
       setCurrentIndex(currentIndex + 1); // Avança para o próximo número quando a resposta está correta
-      setProgess(progess + 10);
+      setProgress(progress + 10);
     } else {
       setAnswer(0);
     }
@@ -133,7 +151,7 @@ const NumbersPractice = () => {
     setAnswer(Math.floor(answer / 10));
   };
 
-  // Captalize Verbal Number Function
+  // Capitalize Verbal Number Function
   function capitalizeWords(phrase: string) {
     // Divida a Phrase em words individuais
     let words = phrase.split(' ');
@@ -164,7 +182,8 @@ const NumbersPractice = () => {
 
   return (
     <div className="m-auto flex flex-col gap-5 items-center justify-center h-screen w-full max-w-xs">
-      <Progress value={progess} />
+      <span>{formatTime(timer)}</span>
+      <Progress value={progress} />
       <div>
         <div>
           {currentIndex < random.length

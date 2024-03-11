@@ -7,6 +7,14 @@ interface ParamsInterface {
     lesson: string[];
   };
 }
+const formatTime = (timeInSeconds: number) => {
+  const minutes = Math.floor(timeInSeconds / 60);
+  const seconds = timeInSeconds % 60;
+
+  return `${minutes.toString().padStart(2, '0')}:${seconds
+    .toString()
+    .padStart(2, '0')}`;
+};
 
 const LessonFinishedPage = ({ params }: ParamsInterface) => {
   console.log(params);
@@ -16,6 +24,8 @@ const LessonFinishedPage = ({ params }: ParamsInterface) => {
 
       <div>
         <p>You earned: {params.lesson[0]} points!</p>
+        <span>Time:</span>
+        <h2>{formatTime(Number(params.lesson[1]))}</h2>
       </div>
     </div>
   );
