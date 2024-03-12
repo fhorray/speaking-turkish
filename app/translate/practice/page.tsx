@@ -71,7 +71,7 @@ const PracticeTranslatePage = () => {
   const [translate, setTranslate] = useState<string>('');
   const [translation, setTranslation] = useState<string>('');
   const [wordToExplain, setWordToExplain] = useState<string>('');
-  const [details, setDetails] = useState([]);
+  const [details, setDetails] = useState(null);
 
   // useEffect to explain the word onClick
   const promptExplainWord = [
