@@ -50,6 +50,11 @@ const Menu = () => {
               Pronounciation
             </NavigationMenuLink>
           </Link>
+          <Link href="/translate/practice" legacyBehavior passHref>
+            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+              Translate
+            </NavigationMenuLink>
+          </Link>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
