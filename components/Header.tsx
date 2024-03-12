@@ -1,22 +1,58 @@
-import React from 'react';
+"use client";
 
-import { Button } from './ui/button';
-import Link from 'next/link';
-import ScoreFlame from './ScoreFlame';
+import React from "react";
+
+import Link from "next/link";
+import ScoreFlame from "./ScoreFlame";
 
 const Header = () => {
   return (
     <div className="w-screen flex gap-5 py-5 px-14 border-b-stone-200 border justify-between items-center">
       <Link href="/">
         <h1 className="text-xl font-normal">
-          Next<span className="text-red-600 font-black">APP</span>
+          Turkish<span className="text-red-600 font-black">HUB</span>
         </h1>
       </Link>
 
-      <div>
+      <div className="flex gap-14 items-center">
+        <Menu />
         <ScoreFlame />
       </div>
     </div>
+  );
+};
+
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuViewport,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+
+// MENU
+const Menu = () => {
+  return (
+    <NavigationMenu>
+      <NavigationMenuList>
+        <NavigationMenuItem>
+          <Link href="/numbers/practice" legacyBehavior passHref>
+            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+              Numbers
+            </NavigationMenuLink>
+          </Link>
+          <Link href="/pronounce/practice" legacyBehavior passHref>
+            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+              Pronounciation
+            </NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
   );
 };
 
