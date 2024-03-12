@@ -31,6 +31,9 @@ interface IRandomPhrases {
   translations: string[];
   words: string[];
 }
+interface IWordTranslation {
+  [key: string]: string;
+}
 
 const proficiency = 'C1';
 const prompt = [
@@ -78,7 +81,7 @@ const PracticeTranslatePage = () => {
     },
     { text: 'word okudum' },
     {
-      text: 'details {\n  "word": "Okudum",\n  "meaning": "Eu li",\n  "grammatical_rule": "O verbo \\"Okudum\\" é a primeira pessoa do singular do passado simples do verbo \\"Okumak\\", que significa \\"ler\\" em turco.",\n  "usage": "O verbo \\"Okudum\\" é usado para indicar que a ação de ler ocorreu no passado, na primeira pessoa do singular.",\n  "examples": [  \n      "Dün gece bir kitap okudum. (Eu li um livro ontem à noite.)",\n      "Okuduğunuz dergiyi okudum. (Eu li a revista que você leu.)",\n      "Kütüphaneden aldığım kitabı okudum. (Eu li o livro que peguei na biblioteca.)",\n      "Okuduğum romanı çok beğendim. (Eu adorei o romance que li.)",\n      "Dersler için birçok makale okudum. (Eu li muitos artigos para as aulas.)"\n  ],\n  "idiomatic_expressions": [\n    "Okumak zorunda kalmak: Ter que ler",\n    "Okuma yazma bilmek: Saber ler e escrever",\n    "Okuyucu: Leitor",\n    "Okuma parçası: Texto de leitura"\n  ]\n}',
+      text: 'details {\n  "word": "Okudum",\n  "meaning": ["Eu li"],\n  "grammatical_rule": "O verbo \\"Okudum\\" é a primeira pessoa do singular do passado simples do verbo \\"Okumak\\", que significa \\"ler\\" em turco.",\n  "usage": "O verbo \\"Okudum\\" é usado para indicar que a ação de ler ocorreu no passado, na primeira pessoa do singular.",\n  "examples": [  \n      "Dün gece bir kitap okudum. (Eu li um livro ontem à noite.)",\n      "Okuduğunuz dergiyi okudum. (Eu li a revista que você leu.)",\n      "Kütüphaneden aldığım kitabı okudum. (Eu li o livro que peguei na biblioteca.)",\n      "Okuduğum romanı çok beğendim. (Eu adorei o romance que li.)",\n      "Dersler için birçok makale okudum. (Eu li muitos artigos para as aulas.)"\n  ],\n  "idiomatic_expressions": [\n    "Okumak zorunda kalmak: Ter que ler",\n    "Okuma yazma bilmek: Saber ler e escrever",\n    "Okuyucu: Leitor",\n    "Okuma parçası: Texto de leitura"\n  ]\n}',
     },
     { text: `word ${wordToExplain}` },
     { text: 'details ' },
@@ -126,10 +129,12 @@ const PracticeTranslatePage = () => {
   };
 
   const handleHoverWord = (word: string) => {
-    const currentPhraseWords = randomPhrases[currentIndex]?.words;
+    const currentPhraseWords: string[] = randomPhrases[currentIndex]?.words;
     if (currentPhraseWords) {
       const cleanedWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, ''); // Remove caracteres especiais, como pontos
-      const translationObj = currentPhraseWords.find((obj) => obj[cleanedWord]);
+      const translationObj = currentPhraseWords.find(
+        (obj: any) => obj[cleanedWord],
+      );
 
       if (translationObj) {
         const translation =
