@@ -170,8 +170,11 @@ const PracticeTranslatePage = () => {
                       </DialogTitle>
                       <DialogDescription>
                         Tradução:
-                        {details?.meaning?.map((means) => (
-                          <span className="text-sm"> {means},</span>
+                        {details?.meaning?.map((means, i) => (
+                          <span key={i} className="text-sm">
+                            {' '}
+                            {means},
+                          </span>
                         ))}
                       </DialogDescription>
                       {details ? (
@@ -183,8 +186,10 @@ const PracticeTranslatePage = () => {
                           <br />
                           <h3 className="font-bold text-lg">Exemplos de Uso</h3>
                           <ol>
-                            {details?.examples?.map((example) => (
-                              <li className="text-sm">- {example}</li>
+                            {details?.examples?.map((example, i) => (
+                              <li key={i} className="text-sm">
+                                - {example}
+                              </li>
                             ))}
                           </ol>
                           <br />
@@ -202,8 +207,10 @@ const PracticeTranslatePage = () => {
                           </h3>
                           <ol>
                             {details?.idiomatic_expressions?.map(
-                              (expression) => (
-                                <li className="text-sm">- {expression}</li>
+                              (expression, i) => (
+                                <li key={i} className="text-sm">
+                                  - {expression}
+                                </li>
                               ),
                             )}
                           </ol>
