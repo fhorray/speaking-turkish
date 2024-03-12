@@ -30,6 +30,9 @@ interface IRandomPhrases {
   phrase: string;
   translations: string[];
   words: string[];
+  details: {
+    meaning: string[];
+  } | null; // Permite que details seja nulo
 }
 interface IWordTranslation {
   [key: string]: string;
@@ -71,7 +74,7 @@ const PracticeTranslatePage = () => {
   const [translate, setTranslate] = useState<string>('');
   const [translation, setTranslation] = useState<string>('');
   const [wordToExplain, setWordToExplain] = useState<string>('');
-  const [details, setDetails] = useState(null);
+  const [details, setDetails] = useState<IRandomPhrases | null>(null);
 
   // useEffect to explain the word onClick
   const promptExplainWord = [
@@ -175,12 +178,14 @@ const PracticeTranslatePage = () => {
                       </DialogTitle>
                       <DialogDescription>
                         Tradução:
-                        {details?.meaning?.map((means, i) => (
-                          <span key={i} className="text-sm">
-                            {' '}
-                            {means},
-                          </span>
-                        ))}
+                        {details &&
+                          details.meaning &&
+                          details.meaning.map((means, i) => (
+                            <span key={i} className="text-sm">
+                              {' '}
+                              {means},
+                            </span>
+                          ))}
                       </DialogDescription>
                       {details ? (
                         <div>
