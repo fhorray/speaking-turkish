@@ -139,7 +139,7 @@ const PracticeTranslatePage = () => {
       if (translationObj) {
         const translation =
           translationObj[cleanedWord as keyof typeof translationObj]; // Adicionando 'as keyof typeof translationObj'
-        setTranslation(translation);
+        setTranslation(translation.toString());
         setTranslationCard(true);
       }
     }
