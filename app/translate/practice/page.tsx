@@ -30,9 +30,11 @@ interface IRandomPhrases {
   phrase: string;
   translations: string[];
   words: string[];
-  details: {
-    meaning: string[];
-  } | null; // Permite que details seja nulo
+  meaning: string[];
+  usage: string;
+  examples: string[];
+  grammatical_rule: string;
+  idiomatic_expressions: string[];
 }
 interface IWordTranslation {
   [key: string]: string;
