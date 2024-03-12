@@ -18,6 +18,9 @@ const formatTime = (timeInSeconds: number) => {
 
 const LessonFinishedPage = ({ params }: ParamsInterface) => {
   console.log(params);
+
+  // Add
+
   return (
     <div className="h-screen w-screen flex flex-col justify-center items-center">
       <h1 className="text-slate-900 text-lg font-bold">Lesson Finished!</h1>
