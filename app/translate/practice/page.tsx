@@ -11,10 +11,25 @@ import {
 } from '@/components/ui/hover-card';
 import { Skeleton } from '@/components/ui/skeleton';
 
+// IMPORTS DIALOG
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { ArrowPathIcon } from '@heroicons/react/16/solid';
+import { useRouter } from 'next/navigation';
+
 // INTERFACES
 interface IRandomPhrases {
   phrase: string;
   translations: string[];
+  words: string[];
 }
 
 const proficiency = 'C1';
@@ -23,36 +38,63 @@ const prompt = [
     text: 'phrase create a list of JSON turkish phrases with all possibles translations into portuguese',
   },
   {
-    text: 'translation [\n{\n  "phrase": "Kitabın kapağı çok güzel.",\n  "translations": [\n    "A capa do livro é muito bonita.",\n    "A capa do livro é muito atraente.",\n    "A capa do livro é muito ilustrativa.",\n    "A capa do livro é muito bem elaborada."\n    ]\n},\n{\n "phrase": "Bu konuyu daha önce hiç konuşmadık.",\n "translations": [\n   "Nós nunca conversamos sobre esse assunto antes.",\n   "Nós nunca discutimos esse tópico antes.",\n   "Nós nunca abordamos esse tema antes.",\n   "Nós nunca tocamos nesse assunto antes."\n   ]\n},\n{\n "phrase": "Geçenlerde çok ilginç bir kitap okudum.",\n "translations": [\n   "Eu li um livro muito interessante recentemente.",\n   "Eu terminei a leitura de um livro muito interessante recentemente.",\n   "Eu me dediquei à leitura de um livro muito interessante recentemente",\n   "Eu mergulhei na leitura de um livro muito interessante recentemente."\n   ]\n},\n{\n "phrase": "Bu filmi daha önce hiç izlememiştim.",\n "translations": [\n   "Eu nunca tinha assistido a esse filme antes.",\n   "Eu não tinha assistido a esse filme até então.",\n   "Eu não tinha conhecimento desse filme até então",\n   "Eu não estava familiarizado com esse filme até então."\n   ]\n},\n{\n "phrase": "Bu konuda uzman değilim.",\n "translations": [\n   "Eu não sou especialista nesse assunto.",\n   "Eu não tenho domínio nesse tema.",\n   "Eu não possuo conhecimento aprofundado sobre esse tema.",\n   "Eu não sou detentor de expertise nesse campo."\n   ]\n},\n{\n "phrase": "Bu konuyu daha sonra konuşalım.",\n "translations": [\n   "Vamos discutir esse assunto mais tarde.",\n   "Nós podemos abordar esse tema em outro momento.",\n   "Nós podemos retomar essa conversa futuramente.",\n   "Nós podemos nos debruçar sobre esse tópico posteriormente."\n   ]\n},\n{\n "phrase": "Bu konuda sana katılmıyorum.",\n "translations": [\n   "Eu discordo de você sobre esse assunto.",\n   "Eu não concordo com sua opinião sobre esse tema.",\n   "Eu tenho uma visão diferente sobre esse tópico.",\n   "Eu apresento uma perspectiva alternativa sobre essa questão."\n   ]\n},\n{\n "phrase": "Bu konuyla ilgili daha fazla bilgi edinmek istiyorum.",\n "translations": [\n   "Eu gostaria de saber mais sobre esse assunto.",\n   "Eu desejo adquirir mais conhecimento sobre esse tema.",\n   "Eu pretendo aprofundar meus conhecimentos sobre esse tópico.",\n   "Eu almejo ampliar minha compreensão sobre essa questão."\n   ]\n}\n]',
+    text: 'translation [\n  {\n    "phrase": "Kitabı okuduğumu biliyordu, ancak doğru değildi.",\n    "translations": [\n      "Ele sabia que eu tinha lido o livro, mas não estava correto.",\n      "Ele estava ciente de que eu tinha lido o livro, porém não estava certo.",\n      "Ele tinha conhecimento de que eu tinha lido o livro, no entanto não estava correto.",\n      "Ele estava consciente de que eu tinha lido o livro, contudo não estava certo."\n    ],\n    "words": [\n      { "Kitabı": "o livro" },\n      { "okuduğumu": "eu tinha lido" },\n      { "biliyordu": "ele sabia" },\n      { "ancak": "mas" },\n      { "doğru": "correto" },\n      { "değildi": "não era" }\n    ]\n  },\n  {\n    "phrase": "Benim için ödeme yapmazsan, sorun yaşayabiliriz.",\n    "translations": [\n      "Se você não me pagar, podemos ter problemas.",\n      "Caso você não faça o pagamento para mim, podemos enfrentar dificuldades.",\n      "Se você não realizar o pagamento em meu nome, podemos ter complicações."\n    ],\n    "words": [\n      { "Benim": "Para mim" },\n      { "için": "Por" },\n      { "ödeme": "Pagamento" },\n      { "yapmazsan": "Não fizer" },\n      { "sorun": "Problema" },\n      { "yaşayabiliriz": "Podemos ter" }\n    ]\n  }\n]',
   },
   {
     text: 'phrase create a list of JSON turkish phrase with all possibles translations into portuguese with the verb "öğrenmek"',
   },
   {
-    text: 'translation [\n  {\n    "phrase": "Türkçe öğrenmek istiyorum.",\n    "translations": [\n      "Eu quero aprender turco.",\n      "Eu desejo aprender turco.",\n      "Eu tenho o anseio de aprender turco.",\n      "Eu possuo a vontade de aprender turco."\n    ]\n  },\n  {\n    "phrase": "Türkçe öğrenmeye karar verdim.",\n    "translations": [\n      "Eu decidi aprender turco.",\n      "Eu tomei a decisão de aprender turco.",\n      "Eu formei a resolução de aprender turco.",\n      "Eu estabeleci o propósito de aprender turco."\n    ]\n  },\n  {\n    "phrase": "Türkçe öğrenmeye başladım.",\n    "translations": [\n      "Eu comecei a aprender turco.",\n      "Eu iniciei o meu aprendizado de turco.",\n      "Eu dei início ao meu estudo de turco.",\n      "Eu entrei no processo de aprendizado de turco."\n    ]\n  },\n  {\n    "phrase": "Türkçe öğrenmekteyim.",\n    "translations": [\n      "Eu estou aprendendo turco.",\n      "Eu encontro-me no processo de aprendizado de turco.",\n      "Eu dedico-me ao estudo de turco.",\n      "Eu esforço-me para adquirir conhecimento da língua turca."\n    ]\n  },\n  {\n    "phrase": "Türkçe öğrenmek için kursa gidiyorum.",\n    "translations": [\n      "Eu frequento um curso para aprender turco.",\n      "Eu participo de aulas para aprender turco.",\n      "Eu matriculei-me num curso para aprender turco.",\n      "Eu inscrevi-me num curso para aprender turco."\n    ]\n  },\n  {\n    "phrase": "Türkçe öğrenmek için özel ders alıyorum.",\n    "translations": [\n      "Eu tenho aulas particulares para aprender turco.",\n      "Eu recebo aulas individuais para aprender turco.",\n      "Eu conto com a orientação de um professor particular para aprender turco.",\n      "Eu disponho de um tutor para me auxiliar no aprendizado de turco."\n    ]\n  }\n]',
+    text: 'translation [\n  {\n    "phrase": "Türkçe öğrenmek zor ama mümkün.",\n    "translations": [\n      "Aprender turco é difícil mas possível.",\n      "É difícil, mas possível, aprender turco.",\n      "Turco é difícil de aprender, mas possível."\n    ],\n    "words": [\n      { "Türkçe": "turco" },\n      { "öğrenmek": "aprender" },\n      { "zor": "difícil" },\n      { "ama": "mas" },\n      { "mümkün": "possível" }\n    ]\n  },\n  {\n    "phrase": "Yeni bir dil öğrenmek büyük bir başarıdır.",\n    "translations": [\n      "Aprender uma nova língua é uma grande conquista.",\n      "É um grande sucesso aprender uma nova língua.",\n      "Aprender uma nova língua é uma grande realização."\n    ],\n    "words": [\n      { "Yeni": "Nova" },\n      { "bir": "Uma" },\n      { "dil": "Língua" },\n      { "öğrenmek": "Aprender" },\n      { "büyük": "Grande" },\n      { "bir": "Um" },\n      { "başarıdır": "Conquista" }\n    ]\n  },\n  {\n    "phrase": "Yabancı bir dil öğrenmek, beyin için harika bir egzersizdir.",\n    "translations": [\n      "Aprender uma língua estrangeira é um excelente exercício para o cérebro.",\n      "Aprender um idioma estrangeiro é um ótimo treino para o cérebro.",\n      "Aprender uma língua estrangeira é um excelente exercício mental."\n    ],\n    "words": [\n      { "Yabancı": "estrangeira" },\n      { "bir": "um" },\n      { "dil": "idioma" },\n      { "öğrenmek": "aprender" },\n      { "beyin": "cérebro" },\n      { "için": "para" },\n      { "harika": "excelente" },\n      { "bir": "um" },\n      { "egzersizdir": "exercício" }\n    ]\n  },\n  {\n    "phrase": "Her yaşta yeni bir şeyler öğrenmek mümkündür.",\n    "translations": [\n      "É possível aprender coisas novas em qualquer idade.",\n      "Em qualquer idade, é possível aprender algo novo.",\n      "É possível aprender algo novo em todas as idades."\n    ],\n    "words": [\n      { "Her": "Todo" },\n      { "yaşta": "Idade" },\n      { "yeni": "Coisas novas" },\n      { "bir": "Algo" },\n      { "şeyler": "Aprender" },\n      { "öğrenmek": "aprender" },\n      { "mümkündür": "é possível" }\n    ]\n  }\n]',
   },
   {
     text: 'phrase create a JSON list turkish phrase with 10 phrases and all possibles translations into portuguese with the verb "öğrenmek"',
   },
   {
-    text: 'translation [\n{\n  "phrase": "Türkçe öğreniyorum.",\n  "translations": [\n    "Estou aprendendo turco.",\n    "Eu estou estudando turco.",\n    "Estou aprendendo a língua turca.",\n    "Estou me dedicando ao estudo do turco."\n  ]\n},\n\n{\n  "phrase": "Kitabı okuduğumu biliyordu.",\n  "translations": [\n    "Ele sabia que eu tinha lido o livro.",\n    "Ele estava ciente de que eu tinha lido o livro.",\n    "Ele tinha conhecimento de que eu tinha lido o livro.",\n    "Ele estava consciente de que eu tinha lido o livro.",\n    "Ele tinha conhecimento de que eu havia lido o livro"\n  ]\n}\n]\n]',
+    text: 'translation [\n  {\n    "phrase": "Bu yıl çok fazla kitap okudum.",\n    "translations": [\n      "Li muitos livros este ano.",\n      "Este ano, li muitos livros.",\n      "Leio muitos livros este ano."\n    ],\n    "words": [\n      { "Bu": "este" },\n      { "yıl": "ano" },\n      { "çok": "muito" },\n      { "fazla": "muitos" },\n      { "kitap": "livros" },\n      { "okudum": "li" }\n    ]\n  },\n  {\n    "phrase": "Onu ne kadar süredir tanıyorsunuz?",\n    "translations": [\n      "Há quanto tempo você o conhece?",\n      "Há quanto tempo vocês se conhecem?",\n      "Há quanto tempo vocês o conhecem?"\n    ],\n    "words": [\n      { "Onu": "ele" },\n      { "ne": "quanto" },\n      { "kadar": "tempo" },\n      { "süredir": "há" }\n    ]\n  },\n  {\n    "phrase": "Yarın bu konuda daha fazla bilgi alacağım.",\n    "translations": [\n      "Amanhã, obterei mais informações sobre este assunto.",\n      "Vou conseguir mais informações sobre este assunto amanhã.",\n      "Vou receber mais informações sobre isso amanhã."\n    ],\n    "words": [\n      { "Yarın": "Amanhã" },\n      { "Bu": "Este" },\n      { "Konuda": "sobre isso" },\n      { "Daha": "mais" },\n      { "fazla": "Mais" },\n      { "bilgi": "Informações" },\n      { "alacağım": "Obterei" }\n    ]\n  }\n]',
   },
   {
-    text: `phrase Create a JSON list with 10 phrases in Turkish at ${proficiency} proficiency level, along with all possible translations into Portuguese (pt-BR).`,
+    text: `phrase Create a JSON list with 10 phrases in ${proficiency} level turkish and all the possibilities of translations into Portuguese (pt-Br).`,
   },
   { text: 'translation ' },
 ];
 
 const PracticeTranslatePage = () => {
+  const router = useRouter();
+  const { generateContent } = useGemini();
   const [randomPhrases, setRandomPhrases] = useState<IRandomPhrases[]>([]);
   const [userAnswer, setUserAnswer] = useState('');
   const [currentIndex, setCurretIndex] = useState(0);
   const [translationCard, setTranslationCard] = useState<boolean>(false);
   const [translate, setTranslate] = useState<string>('');
   const [translation, setTranslation] = useState<string>('');
+  const [wordToExplain, setWordToExplain] = useState<string>('');
+  const [details, setDetails] = useState([]);
+
+  // useEffect to explain the word onClick
+  const promptExplainWord = [
+    { text: 'word fazla' },
+    {
+      text: 'details {\n  "word": "Fazla",\n  "meaning": ["Muito", "Demais", "Excessivo"],\n  "grammatical_rule": "O advérbio \\"Fazla\\" é utilizado para modificar adjetivos, verbos e outros advérbios, indicando uma quantidade ou grau que excede o necessário ou esperado.",\n  "usage": "O advérbio \\"Fazla\\" é usado para indicar uma quantidade ou grau que excede o necessário ou esperado.",\n  "examples": [\n    "Hava çok fazla soğuk. (O tempo está muito frio.)",\n    "Yemekte fazla yedim. (Eu comi demais na refeição.)",\n    "Bu iş için fazla zaman harcadık. (Gastamos muito tempo nessa tarefa.)",\n    "Bugün fazla yoruldum. (Estou muito cansado hoje.)",\n    "Arabada fazla eşya var. (Há muitas coisas extras no carro.)",\n    "Bu elbise bana fazla büyük. (Este vestido é grande demais para mim.)",\n    "Fiyat fazla yüksek. (O preço está mais alto do que o esperado.)",\n    "Sınav fazla zordu. (O exame foi muito difícil.)"\n  ],\n  "idiomatic_expressions": [\n    "Fazla abartmak: Exagerar",\n    "Fazla konuşmak: Falar demais",\n    "Fazla düşünmek: Pensar demais",\n    "Fazla içmek: Beber demais",\n    "Fazla yemek: Comer demais"\n  ]\n}',
+    },
+    { text: 'word okudum' },
+    {
+      text: 'details {\n  "word": "Okudum",\n  "meaning": "Eu li",\n  "grammatical_rule": "O verbo \\"Okudum\\" é a primeira pessoa do singular do passado simples do verbo \\"Okumak\\", que significa \\"ler\\" em turco.",\n  "usage": "O verbo \\"Okudum\\" é usado para indicar que a ação de ler ocorreu no passado, na primeira pessoa do singular.",\n  "examples": [  \n      "Dün gece bir kitap okudum. (Eu li um livro ontem à noite.)",\n      "Okuduğunuz dergiyi okudum. (Eu li a revista que você leu.)",\n      "Kütüphaneden aldığım kitabı okudum. (Eu li o livro que peguei na biblioteca.)",\n      "Okuduğum romanı çok beğendim. (Eu adorei o romance que li.)",\n      "Dersler için birçok makale okudum. (Eu li muitos artigos para as aulas.)"\n  ],\n  "idiomatic_expressions": [\n    "Okumak zorunda kalmak: Ter que ler",\n    "Okuma yazma bilmek: Saber ler e escrever",\n    "Okuyucu: Leitor",\n    "Okuma parçası: Texto de leitura"\n  ]\n}',
+    },
+    { text: `word ${wordToExplain}` },
+    { text: 'details ' },
+  ];
+  useEffect(() => {
+    generateContent(promptExplainWord).then((wordDetails) => {
+      try {
+        const convertedExplanation = JSON.parse(wordDetails);
+        setDetails(convertedExplanation);
+      } catch (error) {
+        console.log('Erro: ', error);
+      }
+    });
+  }, [wordToExplain]);
 
   // useEffect to create a random array of phrases with Gemini
-  const { generateContent } = useGemini();
   useEffect(() => {
     generateContent(prompt).then((phrases) => {
       try {
@@ -69,28 +111,13 @@ const PracticeTranslatePage = () => {
     });
   }, [generateContent]);
 
-  const promptTranslate = [
-    { text: 'word: Translate the Turkish word to PT-BR: Araba to PT-BR' },
-    { text: 'translation: Carro' },
-    { text: 'word: Translate the Turkish word to PT-BR:\n Ev' },
-    { text: 'translation: Casa' },
-    { text: 'word: Translate the Turkish word to PT-BR: Çocuk' },
-    { text: 'translation: Criança' },
-    { text: `word: Translate the Turkish word to PT-BR: ${translate}` },
-    { text: 'translation: ' },
-  ];
-
-  // Translate
+  const timer = 10;
+  // REDIRECT TO SCORE PAGE AFTER FINISH LESSON
   useEffect(() => {
-    generateContent(promptTranslate).then((translation) => {
-      try {
-        setTranslation(translation);
-        console.log('translate ', translation);
-      } catch (error) {
-        console.log('Erro: ', error);
-      }
-    });
-  }, [translate]);
+    if (currentIndex > 9) {
+      router.push(`/score/${currentIndex}/${timer}`);
+    }
+  }, [currentIndex]);
 
   const splitWords = (phrase: string) => {
     const words = phrase?.split(' ');
@@ -99,28 +126,113 @@ const PracticeTranslatePage = () => {
   };
 
   const handleHoverWord = (word: string) => {
-    // console.log(word);
-    setTranslationCard(!translationCard);
-    setTranslate(word);
+    const currentPhraseWords = randomPhrases[currentIndex]?.words;
+    if (currentPhraseWords) {
+      const cleanedWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, ''); // Remove caracteres especiais, como pontos
+      const translationObj = currentPhraseWords.find((obj) => obj[cleanedWord]);
+
+      if (translationObj) {
+        const translation =
+          translationObj[cleanedWord as keyof typeof translationObj]; // Adicionando 'as keyof typeof translationObj'
+        setTranslation(translation);
+        setTranslationCard(true);
+      }
+    }
   };
 
+  const handleOnClickWord = (word: string) => {
+    setWordToExplain(word);
+  };
+
+  console.log(details);
+
   return (
-    <>
+    <section className="w-full flex flex-col items-center justify-center h-screen gap-5">
       {randomPhrases.length > 0 ? (
-        <div>
-          {splitWords(randomPhrases[currentIndex].phrase).map((word, i) => (
+        <div className="flex w-[570px] items-center justify-center ">
+          {splitWords(randomPhrases[currentIndex]?.phrase)?.map((word, i) => (
             <HoverCard key={i}>
               <HoverCardTrigger
                 onMouseOut={() => {
                   setTranslationCard(false);
-                  setTranslation('');
                 }}
                 onMouseOver={() => handleHoverWord(word)}
                 className="cursor-pointer px-1"
               >
-                {word}
+                <Dialog onOpenChange={() => setDetails(null)}>
+                  <DialogTrigger onClick={() => handleOnClickWord(word)}>
+                    {word}
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle className="text-2xl text-red-800">
+                        Palavra: {word}
+                      </DialogTitle>
+                      <DialogDescription>
+                        Tradução:
+                        {details?.meaning?.map((means) => (
+                          <span className="text-sm"> {means},</span>
+                        ))}
+                      </DialogDescription>
+                      {details ? (
+                        <div>
+                          <h3 className="font-bold text-lg">Uso</h3>
+                          <p>{details?.usage}</p>
+                          <br />
+                          <hr />
+                          <br />
+                          <h3 className="font-bold text-lg">Exemplos de Uso</h3>
+                          <ol>
+                            {details?.examples?.map((example) => (
+                              <li className="text-sm">- {example}</li>
+                            ))}
+                          </ol>
+                          <br />
+                          <hr />
+                          <br />
+                          <h3 className="font-bold text-lg">
+                            Regras Gramaticais
+                          </h3>
+                          <p className="text-sm">{details?.grammatical_rule}</p>
+                          <br />
+                          <hr />
+                          <br />
+                          <h3 className="font-bold text-lg">
+                            Expressões idiomáticas
+                          </h3>
+                          <ol>
+                            {details?.idiomatic_expressions?.map(
+                              (expression) => (
+                                <li className="text-sm">- {expression}</li>
+                              ),
+                            )}
+                          </ol>
+                          <br />
+                          <hr />
+                          <br />
+                        </div>
+                      ) : (
+                        <div className="flex items-center space-x-4">
+                          <Skeleton className="h-12 w-12 rounded-full" />
+                          <div className="space-y-2">
+                            <Skeleton className="h-4 w-[250px]" />
+                            <Skeleton className="h-4 w-[200px]" />
+                          </div>
+                        </div>
+                      )}
+                    </DialogHeader>
+                  </DialogContent>
+                </Dialog>
               </HoverCardTrigger>
-              <HoverCardContent>{translation}</HoverCardContent>
+              <HoverCardContent
+                onMouseOut={() =>
+                  translation ? translation : setTranslation('')
+                }
+                className="flex flex-col items-center justify-center"
+              >
+                {translation}
+                <span className="text-[12px] text-slate-500">Detalhes</span>
+              </HoverCardContent>
             </HoverCard>
           ))}
         </div>
@@ -133,7 +245,15 @@ const PracticeTranslatePage = () => {
           </div>
         </div>
       )}
-    </>
+      {/* GENERATE ANOTHER PHRASE BUTTON */}
+      <Button
+        className="text-white"
+        onClick={() => setCurretIndex(currentIndex + 1)}
+      >
+        <ArrowPathIcon className='className="h-4 w-4"' />
+        Nova Frase
+      </Button>
+    </section>
   );
 };
 
