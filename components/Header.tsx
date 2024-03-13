@@ -17,6 +17,7 @@ const Header = () => {
       <div className="flex gap-14 items-center">
         <Menu />
         <ScoreFlame />
+        <UserButton />
       </div>
     </div>
   );
@@ -33,6 +34,7 @@ import {
   NavigationMenuViewport,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { UserButton } from "@clerk/nextjs";
 
 // MENU
 const Menu = () => {
